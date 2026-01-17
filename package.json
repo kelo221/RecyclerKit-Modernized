@@ -1,0 +1,24 @@
+{
+  "name": "com.kelo.recyclerkit",
+  "version": "1.0.0",
+  "displayName": "RecyclerKit (Modernized)",
+  "description": "A high-performance object pooling system for Unity, modernized for Unity 6 with Burst, Jobs, and Native Collections support.",
+  "unity": "2021.3",
+  "documentationUrl": "https://github.com/kelo221/RecyclerKit-Modernized",
+  "author": {
+    "name": "kelo221",
+    "url": "https://github.com/kelo221"
+  },
+  "keywords": [
+    "pooling",
+    "recyclerkit",
+    "performance",
+    "burst",
+    "jobs"
+  ],
+  "dependencies": {
+    "com.unity.burst": "1.8.0",
+    "com.unity.collections": "2.0.0",
+    "com.unity.mathematics": "1.2.6"
+  }
+}

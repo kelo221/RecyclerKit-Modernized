@@ -1,21 +1,74 @@
-RecyclerKit
-===========
+# RecyclerKit (Modernized)
 
-RecyclerKit is an object pooling system that is super easy to use. Stick a TrashMan component on any GameObject in your scene and drag any prefabs you want pooled into it's inspector. You can configure the total objects to preallocate and a couple other things there. Everything has tooltips so just hover your mouse over them to see what they do. You then use the spawn method where you would normally call Instantiate and the despawn method where you would normally call Destroy.
+**RecyclerKit** is a lightweight, high-performance object pooling system for Unity. This version is a modernized fork of [prime31's RecyclerKit](https://github.com/prime31/RecyclerKit), rebuilt for modern Unity development standards.
 
+Object pooling is essential for maintaining high frame rates and minimizing Garbage Collector (GC) spikes by reusing objects instead of constantly calling `Instantiate` and `Destroy`.
 
-Usage
-----
-- drag the TrashMan script onto a GameObject in your scene (it is usually a good idea to use the Script Execution Order to have TrashMan run before other scripts)
-- in the TrashMan inspector, drag any prefabs (or GameObjects from the current scene) that you want it to manage and setup the recycle bin details
-- use the following API to manage instances:
-	* TrashMan.spawn replaces your calls to Instantiate
-	* TrashMan.despawn or TrashMan.despawnAfterDelay replaces your calls to Destroy
-	* TrashMan.manageRecycleBin creates a new recycle bin at runtime in case you don't want to use the Editor
+## What's Modernized?
+This fork brings the classic utility into the modern era:
 
+- **Unity 6.3 LTS Optimized**: Fully compatible with Unity 6 (6000.3.x) and modern C# features.
+- **UPM Support**: Now a proper Unity Package. Install and update via Git URL.
+- **Assembly Definitions**: Includes `RecyclerKit.asmdef` and `RecyclerKit.Editor.asmdef` to ensure faster compilation times and clean dependency separation.
+- **Clean Structure**: Scripts have been moved to standard `Runtime` and `Editor` folders, removing project clutter.
+- **Enhanced Performance**: Refactored internal lookups using `NativeHashMap` (Native Collections) for better efficiency in high-frequency spawning scenarios.
 
-Optional Branch
-----
+## Installation
 
-The ObjectComponent branch has one minor change: any recycleable object must have the TrashManRecycleableObject component on it. This does enable a couple niceties such as spawn/despawn events and no need to access GameObject.name (which allocates a bit of memory)
+### Via Git URL
+1. In Unity, open **Window > Package Manager**.
+2. Click the **+** (plus) button and select **Add package from git URL...**
+3. Enter the following URL:
+   ```text
+   https://github.com/kelo221/RecyclerKit-Modernized.git
+   ```
 
+## How It Works
+RecyclerKit uses the concept of a `PoolManager` (formerly `TrashMan`). Instead of creating a new instance of a prefab, you request one from the pool.
+
+### Basic Usage
+
+#### 1. Prepare your Prefab
+Attach the `PooledObject` component to any prefab you want to pool. This allows the system to track its state and lifecycle.
+
+#### 2. Spawning an Object
+Instead of `Instantiate(prefab)`, use `PoolManager.Spawn`:
+
+```csharp
+using RecyclerKit;
+
+// Returns a pooled instance if available, otherwise creates one
+var myObj = PoolManager.Spawn(prefab, position, rotation);
+
+// Or spawn by pool name
+var myObj2 = PoolManager.Spawn("MyPrefabName", position, rotation);
+```
+
+#### 3. Despawning an Object
+Instead of `Destroy(gameObject)`, use `PoolManager.Despawn`:
+
+```csharp
+using RecyclerKit;
+
+// Returns the object to the pool for later reuse
+PoolManager.Despawn(gameObject);
+```
+
+### Advanced: Pre-warming the Pool
+In Unity 6, performance during scene transitions is key. You can pre-fill your pool so there is zero allocation during gameplay. You can now do this asynchronously!
+
+```csharp
+// Pre-warm pools defined in the inspector asynchronously
+StartCoroutine(PoolManager.WarmupAsync(() => {
+    Debug.Log("All pools ready!");
+}));
+```
+
+## Why use this in Unity 6?
+While Unity has a built-in `UnityEngine.Pool` API now, **RecyclerKit** remains a favorite for developers who want:
+1. **Simplicity**: A much simpler API for GameObjects than the built-in generic pool.
+2. **Automatic Management**: The `PoolManager` handling the heavy lifting without needing complex boilerplate for every object type.
+3. **Editor Tooling**: Includes custom inspectors to see your pools in real-time.
+
+## License
+MIT (See [LICENSE.txt](LICENSE.txt) for details)
